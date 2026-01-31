@@ -9,6 +9,10 @@ on:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
+env:
+  S3_BUCKET_NAME: rahman-bucket-name
+  # CLOUDFRONT_DISTRIBUTION_ID: E1234567890ABC
+  
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
   contents: read
@@ -39,21 +43,21 @@ jobs:
           
       - name: Sync files to S3
         run:
-            aws s3 sync . s3://${{ secrets.S3_BUCKET_NAME }} \
+            aws s3 sync . s3://${{ env.S3_BUCKET_NAME }} \
             --delete \
             --exclude ".git/*" \
             --exclude ".github/*" \
             --exclude "*.md" \
             --exclude "terraform/
             
-      - name: Invalidate CloudFront cache
-        if: success()
-        run: |
-          aws cloudfront create-invalidation \
-            --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} \
-            --paths "/*"
-          # Upload entire repository
-          path: '.'
+      # - name: Invalidate CloudFront cache
+      #   if: success()
+      #   run: |
+      #     aws cloudfront create-invalidation \
+      #       --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} \
+      #       --paths "/*"
+      #     # Upload entire repository
+      #     path: '.'
           
       - name: Deployment status
         if: success()
