@@ -1,5 +1,5 @@
 # Simple workflow for deploying static content to GitHub Pages
-name: Deploy to s3
+name: Deploy to s3 and Cloudfront
 
 on:
   # Runs on pushes targeting the default branch
@@ -11,7 +11,7 @@ on:
 
 env:
   S3_BUCKET_NAME: rahman-bucket-name
-  # CLOUDFRONT_DISTRIBUTION_ID: E1234567890ABC
+  CLOUDFRONT_DISTRIBUTION_ID: ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}
   
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
@@ -58,24 +58,18 @@ jobs:
             --include "*.html" \
             --include "*.json"
 
-      # - name: Sync files to S3
-      #   run:
-      #       aws s3 sync . s3://${{ env.S3_BUCKET_NAME }} \
-      #       --delete \
-      #       --exclude ".git/*" \
-      #       --exclude ".github/*" \
-      #       --exclude "*.md" \
-      #       --exclude "terraform/
-            
-      # - name: Invalidate CloudFront cache
-      #   if: success()
-      #   run: |
-      #     aws cloudfront create-invalidation \
-      #       --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} \
-      #       --paths "/*"
-      #     # Upload entire repository
-      #     path: '.'
-          
-      - name: Deployment status
+      - name: Invalidate CloudFront cache
         if: success()
-        run: echo "✅ Deployment completed successfully!"
+        run: |
+          aws cloudfront create-invalidation \
+            --distribution-id ${{ env.CLOUDFRONT_DISTRIBUTION_ID }} \
+            --paths "/*"
+          # Upload entire repository
+          path: '.'
+          
+      - name: Deployment summary
+        run: |
+          echo "✅ Deployment completed successfully!"
+          echo "🌐 Website URL: https://${{ secrets.CLOUDFRONT_DOMAIN_NAME }}"
+          echo "📦 S3 Bucket: ${{ env.S3_BUCKET_NAME }}"
+          echo "🔄 CloudFront invalidation created"
