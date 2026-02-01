@@ -1,5 +1,5 @@
 # Simple workflow for deploying static content to GitHub Pages
-name: Deploy to s3 and Cloudfront
+name: Deploy to s3 and Cloudfront.
 
 on:
   # Runs on pushes targeting the default branch
