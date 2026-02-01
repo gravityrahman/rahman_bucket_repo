@@ -64,8 +64,7 @@ jobs:
           aws cloudfront create-invalidation \
             --distribution-id ${{ env.CLOUDFRONT_DISTRIBUTION_ID }} \
             --paths "/*"
-          # Upload entire repository
-          path: '.'
+    
           
       - name: Deployment summary
         run: |
